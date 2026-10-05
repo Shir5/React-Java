@@ -5,10 +5,15 @@ import com.reactjava.shir.statistics.ActivityStatistics;
 import java.util.Objects;
 
 public record BenchmarkResult(String method, long startedAtNanos, long finishedAtNanos,
-                              ActivityStatistics statistics, long allocatedBytes) {
+                              ActivityStatistics statistics, long cpuTimeNanos, long allocatedBytes) {
     public BenchmarkResult(String method, long startedAtNanos, long finishedAtNanos,
                            ActivityStatistics statistics) {
-        this(method, startedAtNanos, finishedAtNanos, statistics, -1);
+        this(method, startedAtNanos, finishedAtNanos, statistics, -1, -1);
+    }
+
+    public BenchmarkResult(String method, long startedAtNanos, long finishedAtNanos,
+                           ActivityStatistics statistics, long allocatedBytes) {
+        this(method, startedAtNanos, finishedAtNanos, statistics, -1, allocatedBytes);
     }
 
     public BenchmarkResult {
@@ -19,8 +24,8 @@ public record BenchmarkResult(String method, long startedAtNanos, long finishedA
             throw new IllegalArgumentException("finish time must not precede start time");
         }
         Objects.requireNonNull(statistics, "statistics");
-        if (allocatedBytes < -1) {
-            throw new IllegalArgumentException("allocatedBytes must be non-negative or -1 when unavailable");
+        if (cpuTimeNanos < -1 || allocatedBytes < -1) {
+            throw new IllegalArgumentException("CPU time and allocated bytes must be non-negative or -1 when unavailable");
         }
     }
 

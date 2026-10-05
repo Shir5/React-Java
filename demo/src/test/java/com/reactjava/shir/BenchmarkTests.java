@@ -3,6 +3,7 @@ package com.reactjava.shir;
 import com.reactjava.shir.activity.ActivityType;
 import com.reactjava.shir.benchmark.BenchmarkResult;
 import com.reactjava.shir.benchmark.BenchmarkRunner;
+import com.reactjava.shir.benchmark.BenchmarkSummary;
 import com.reactjava.shir.statistics.ActivityStatistics;
 import org.junit.jupiter.api.Test;
 
@@ -21,12 +22,15 @@ class BenchmarkTests {
         assertEquals(List.of("for loop", "Stream API, standard collectors", "Stream API, custom collector",
                         "Stream API, teeing collector"),
                 results.stream().map(result -> result.method()).toList());
-        for (BenchmarkResult result : results) {
+        for (BenchmarkSummary result : results) {
             assertEquals(results.get(0).statistics(), result.statistics());
             assertEquals(1, result.statistics().sessionCount());
             assertEquals(10, result.statistics().totalMinutes());
             assertEquals(20, result.statistics().earnedCoins());
-            assertTrue(result.elapsedNanos() >= 0);
+            assertEquals(30, result.measurementCount());
+            assertTrue(result.medianElapsedNanos() >= 0);
+            assertTrue(result.medianCpuTimeNanos() >= -1);
+            assertTrue(result.medianAllocatedBytes() >= -1);
         }
         assertThrows(UnsupportedOperationException.class, () -> results.clear());
     }
